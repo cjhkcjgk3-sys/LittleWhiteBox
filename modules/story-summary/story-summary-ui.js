@@ -548,9 +548,14 @@ const VECTOR_API_TIMEOUT_NORMALIZERS = {
                 postMsg('REQUEST_CANCEL');
                 return;
             }
+            const rawEnd = String($('manual-summary-end').value || '').trim();
+            if (rawEnd && (!/^\d+$/.test(rawEnd) || !Number.isSafeInteger(Number(rawEnd)) || Number(rawEnd) < 1)) {
+                renderSummaryStatus({ type: 'SUMMARY_ERROR', message: '请输入有效的结束楼层。' });
+                return;
+            }
             localGenerating = true;
             syncCurrentChatSummaryControls();
-            postMsg('REQUEST_GENERATE', { config: { trigger: config.trigger } });
+            postMsg('REQUEST_GENERATE', { config: { trigger: config.trigger }, endFloor: rawEnd ? Number(rawEnd) : null });
         };
     }
 

@@ -136,6 +136,22 @@ async function importFixture() {
     return structuredClone(ext().storySummary.json);
 }
 
+test('explicit manual end selects the requested old floors and refuses a delayed tail', async () => {
+    host.context.chat = Array.from({ length: 100 }, (_, i) => ({ mes: `message ${i + 1}` }));
+    let requested;
+    host.generate = async request => { requested = request; return JSON.stringify({ events: [], factUpdates: [] }); };
+    const result = await mod.runSummaryGeneration(19, { trigger: { delayFloors: 0, maxPerRun: 20 }, explicitEndFloor: 20 });
+    assert.equal(result.committed, true);
+    assert.deepEqual([...requested.newHistoryText.matchAll(/^#(\d+) /gm)].map(m => Number(m[1])),
+        Array.from({ length: 20 }, (_, i) => i + 1));
+    assert.equal(mod.getSummaryStore().lastSummarizedMesId, 19);
+    requested = null;
+    const blocked = await mod.runSummaryGeneration(99, { trigger: { delayFloors: 2, maxPerRun: 80 }, explicitEndFloor: 100 });
+    assert.equal(blocked.success, false);
+    assert.equal(requested, null);
+    assert.equal(mod.getSummaryStore().lastSummarizedMesId, 19);
+});
+
 // Acceptance: hidden variants occupy their original floors but supply no new
 // source. Unhide is observed at the next read, without rewriting past memory.
 // Cost: unwanted text silently reaches a model, or stored memories are lost.

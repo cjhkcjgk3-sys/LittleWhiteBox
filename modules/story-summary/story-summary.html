@@ -86,6 +86,11 @@
                 <button class="btn btn-p" id="btn-generate"></button>
             </div>
         </div>
+        <div class="manual-summary-range">
+            <label for="manual-summary-end">手动总结至第</label>
+            <input id="manual-summary-end" type="number" min="1" step="1" inputmode="numeric" placeholder="自动" aria-describedby="manual-summary-hint">
+            <span>楼</span><small id="manual-summary-hint">从已总结位置的下一楼开始；留空按原设置总结。</small>
+        </div>
         <div class="archive-nav">
             <nav class="archive-tabs" role="tablist" aria-label="剧情档案">
                 <button class="archive-tab" id="archive-tab-story" role="tab" data-view="story" aria-selected="true" aria-controls="archive-story">剧情 <span id="stat-events">0</span></button>

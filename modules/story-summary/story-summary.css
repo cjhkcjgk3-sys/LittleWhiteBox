@@ -6,6 +6,27 @@
     box-sizing: border-box;
 }
 
+.manual-summary-range {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 16px 10px;
+    color: var(--txt2);
+    font-size: .8125rem;
+}
+
+.manual-summary-range input {
+    width: 6em;
+    padding: 4px 6px;
+    color: var(--txt);
+    background: var(--bg2);
+    border: 1px solid var(--bdr);
+    border-radius: 5px;
+}
+
+.manual-summary-range small { color: var(--txt3); }
+
 /* ═══════════════════════════════════════════════════════════════════════════
    Facts (替换 World State)
    ═══════════════════════════════════════════════════════════════════════════ */

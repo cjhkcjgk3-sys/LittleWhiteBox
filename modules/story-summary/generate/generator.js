@@ -145,6 +145,12 @@ export async function runSummaryGeneration(mesId, config, callbacks = {}, runtim
     const filterRules = structuredClone(getTextFilterRules());
     const slice = buildIncrementalSlice(mesId, lastSummarized, maxPerRun, delayFloors, filterRules);
 
+    if (config.explicitEndFloor != null && slice.endMesId !== config.explicitEndFloor - 1) {
+        const message = '所选结束楼层暂不可总结，请检查“最近几楼暂不总结”设置或等待当前消息完成。';
+        onError?.(message);
+        return { success: false, error: new Error(message) };
+    }
+
     if (slice.count === 0 || !slice.text) {
         const { chat } = getContext();
         onStatus?.(getSummarySourceEnd(chat, mesId) < Math.min(mesId, chat.length - 1)

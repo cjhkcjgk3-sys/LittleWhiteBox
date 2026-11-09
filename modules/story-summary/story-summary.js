@@ -3259,8 +3259,20 @@ async function handleFrameMessage(event) {
                 break;
             }
             const ctx = getContext();
-            currentMesId = (ctx.chat?.length ?? 1) - 1;
-            await handleManualGenerate(currentMesId, data.config || {});
+            const endFloor = data.endFloor;
+            const lastSummarized = getSummaryStore()?.lastSummarizedMesId ?? -1;
+            if (endFloor != null && (!Number.isSafeInteger(endFloor) || endFloor <= lastSummarized + 1 || endFloor > (ctx.chat?.length ?? 0))) {
+                postToFrame({ type: 'SUMMARY_ERROR', message: `结束楼层须在 ${lastSummarized + 2} 到 ${ctx.chat?.length ?? 0} 之间。` });
+                notifySummaryState();
+                break;
+            }
+            currentMesId = endFloor == null ? (ctx.chat?.length ?? 1) - 1 : endFloor - 1;
+            const manualConfig = endFloor == null ? (data.config || {}) : {
+                ...data.config,
+                trigger: { ...data.config?.trigger, maxPerRun: endFloor - lastSummarized - 1 },
+                explicitEndFloor: endFloor,
+            };
+            await handleManualGenerate(currentMesId, manualConfig);
             break;
         }
 

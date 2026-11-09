@@ -87,6 +87,17 @@ test('unavailable snapshot followed by failure and finish leaves retry and hidin
     assert.equal(p.ui.localGenerating, true); // Do not offer a new run before host settlement.
 });
 
+test('manual end floor is sent as a number and invalid input does not start generation', () => {
+    const p = panel(); p.state();
+    p.$('manual-summary-end').value = '1.5';
+    p.$('btn-generate').onclick();
+    assert.equal(p.messages.length, 0);
+    assert.equal(p.ui.localGenerating, false);
+    p.$('manual-summary-end').value = '20';
+    p.$('btn-generate').onclick();
+    assert.equal(p.messages.at(-1).endFloor, 20);
+});
+
 for (const state of [{ hasChat: false }, { effectiveEnabled: false }, { changing: true }]) {
     test(`running stop remains operable while controls are unavailable: ${JSON.stringify(state)}`, () => {
         const p = panel(); p.state(state);
